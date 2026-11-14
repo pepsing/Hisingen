@@ -148,56 +148,6 @@ class IdentityTests(unittest.TestCase):
 
 
 class PublicationTests(unittest.TestCase):
-    def test_installation_link_uses_the_workflow_repository(self):
-        with patch.dict(os.environ, {"GITHUB_REPOSITORY": "pepsing/Hisingen"}):
-            fork_release = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(fork_release)
-        self.assertEqual(
-            fork_release.IOS_INSTALL_GUIDE_URL,
-            "https://github.com/pepsing/Hisingen/blob/main/docs/ios-self-signing.md",
-        )
-
-    def test_publication_preserves_notes_and_adds_installation_link_once(self):
-        existing_notes = "## Changes\n\n- Existing change\n\n维护者补充说明。\n"
-        linked_notes = existing_notes + f"\n[安装指南]({release.IOS_INSTALL_GUIDE_URL})\n"
-        for exists, body in [(False, existing_notes), (True, existing_notes), (True, linked_notes)]:
-            with self.subTest(existing_draft=exists, already_linked=body == linked_notes), repository():
-                Path("artifact.zip").write_bytes(b"verified")
-                release.create_manifest("release-manifest.json", "v1.1.0", ["artifact.zip"])
-                published_bodies = []
-                created = []
-                original_run = release.run
-
-                def api(*args, **kwargs):
-                    if args[:3] == ("gh", "release", "view"):
-                        if "body" in args:
-                            return result(body)
-                        return result('{"isDraft":true}') if exists else result(returncode=1, stderr="not found")
-                    if args[:3] == ("gh", "release", "create"):
-                        created.append(args)
-                        return result()
-                    if args[:3] == ("gh", "release", "upload"):
-                        return result()
-                    if args[:3] == ("gh", "release", "download"):
-                        out = Path(args[args.index("--dir") + 1])
-                        for name in ["artifact.zip", "release-manifest.json"]:
-                            (out / name).write_bytes(Path(name).read_bytes())
-                        return result()
-                    if args[:3] == ("gh", "release", "edit"):
-                        self.assertIn("--draft=false", args)
-                        published_bodies.append(Path(args[args.index("--notes-file") + 1]).read_text(encoding="utf-8"))
-                        return result()
-                    return original_run(*args, **kwargs)
-
-                with patch.object(release, "run", side_effect=api), patch.object(release, "monotonic"):
-                    release.publish("v1.1.0")
-                self.assertEqual(len(created), 0 if exists else 1)
-                self.assertEqual(len(published_bodies), 1)
-                self.assertTrue(published_bodies[0].startswith(body.rstrip()))
-                self.assertEqual(published_bodies[0].count(release.IOS_INSTALL_GUIDE_URL), 1)
-                if body == linked_notes:
-                    self.assertEqual(published_bodies[0], body)
-
     def test_older_completion_cannot_overwrite_newer_release(self):
         with patch.object(release, "published_versions", return_value=["v2.0.1", "v2.1.0"]):
             with self.assertRaisesRegex(ValueError, "rollback"):

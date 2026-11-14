@@ -1258,8 +1258,6 @@ For the full breakdown, see [Privacy](docs/security/privacy.md), [Data retention
 
 Hisingen requires **macOS 15 Sequoia or later**.
 
-For iOS distribution research, see the [self-signing and installation guide (中文)](docs/ios-self-signing.md), covering AltStore Classic, 爱思助手 and renewal limits. Hisingen's current release pipeline produces macOS packages. An iOS IPA and device validation are pending.
-
 Releases are universal and support both:
 
 * Apple Silicon

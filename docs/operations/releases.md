@@ -59,18 +59,6 @@ The Pages deployment verifies served callback/feed bytes and referenced release
 assets over HTTPS. Homebrew hashes the published DMG and refuses a cask downgrade.
 Missing Homebrew credentials fail preflight instead of silently skipping a channel.
 
-## iOS installation reference in release notes
-
-Before publishing a draft, `Scripts/release-support.py publish` appends the
-[iOS self-signing guide](../ios-self-signing.md) to the GitHub release body using
-`--notes-file`. It preserves generated notes and maintainer edits and adds the
-guide link once, including when resuming an existing draft. The link follows the
-guide on main so readers receive updated installation instructions.
-
-The current build produces macOS packages. The guide records the prerequisites
-for a future iOS IPA and the outstanding device validation. Update it when an
-iOS artifact becomes available or tool requirements change.
-
 ## Retrying failures
 
 Use **Re-run failed jobs** to preserve successful build checkpoints. A publication
