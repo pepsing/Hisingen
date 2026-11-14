@@ -16,6 +16,10 @@ from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parent.parent
 VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\Z")
+IOS_INSTALL_GUIDE_URL = (
+    f"https://github.com/{os.environ.get('GITHUB_REPOSITORY', 'NicolasKheirallah/Hisingen')}"
+    "/blob/main/docs/ios-self-signing.md"
+)
 
 
 def run(*args, check=True, input=None):
@@ -246,9 +250,18 @@ def publish(tag):
         for file in files:
             if digest(Path(temp) / Path(file).name) != digest(file):
                 raise ValueError(f"Published asset differs from checkpoint: {file}")
-    if is_draft:
-        monotonic(tag)
-        run("gh", "release", "edit", tag, "--draft=false", "--latest")
+        if is_draft:
+            body = run("gh", "release", "view", tag, "--json", "body", "--jq", ".body").stdout
+            if IOS_INSTALL_GUIDE_URL not in body:
+                body = body.rstrip() + (
+                    "\n\n## iOS self-signing\n\n"
+                    f"See the [iOS self-signing and installation guide (中文)]({IOS_INSTALL_GUIDE_URL}) "
+                    "for AltStore Classic, 爱思助手, renewal limits and current IPA availability.\n"
+                )
+            notes = Path(temp) / "release-notes.md"
+            notes.write_text(body, encoding="utf-8")
+            monotonic(tag)
+            run("gh", "release", "edit", tag, "--draft=false", "--latest", "--notes-file", str(notes))
     print(f"Verified complete release: {tag}")
 
 

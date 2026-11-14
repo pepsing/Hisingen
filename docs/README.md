@@ -87,6 +87,7 @@ architecture/overview.md
 
 ## Documentation index
 
+- [iOS 自助签名与安装](ios-self-signing.md) covers AltStore Classic, 爱思助手, renewal limits and the project's IPA availability.
 - **architecture/**: [overview](architecture/overview.md), [theme-and-caching](architecture/theme-and-caching-architecture.md), [system-context](architecture/system-context.md), [components](architecture/components.md), [runtime](architecture/runtime.md), [concurrency](architecture/concurrency.md), [state-management](architecture/state-management.md), [data-flow](architecture/data-flow.md), [persistence](architecture/persistence.md), [capabilities](architecture/capabilities.md), [providers](architecture/providers.md), [refresh-system](architecture/refresh-system.md), [logging](architecture/logging.md), [motion-system](architecture/motion-system.md), [vehicle-motion](architecture/vehicle-motion.md).
 - **api/**: [overview](api/overview.md), [authentication](api/authentication.md), [polestar](api/polestar.md), [volvo](api/volvo.md), [errors-and-rate-limits](api/errors-and-rate-limits.md)
 - **domain/**: [vehicle](domain/vehicle.md), [capability-matrix](domain/capability-matrix.md), [charging](domain/charging.md), [notifications](domain/notifications.md)
